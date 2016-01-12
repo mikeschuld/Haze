@@ -194,3 +194,11 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+
+# Unity specific folders
+Library
+Temp
+*UnityVS*
+
+# Project specific folders
+Publish
