@@ -18,10 +18,28 @@ public class FieldGameObject : MonoBehaviour {
 	private Field field;
 
 	private void Start() {
-		field = new Field(Extents);
-		field.Step += Average.OnStep;
+		field = new Field(Extents, new Automata(new[] {
+			3, 5, 6, 7, 8
+		}, new[] {
+			5, 6, 7, 8
+		}));
 
-		field.SetCellValue(0, 0, 0, 100);
+		field.SetCellValue(-3, 0, 0, 1);
+		field.SetCellValue(-2, 0, 0, 1);
+		field.SetCellValue(-1, 0, 0, 1);
+
+		field.SetCellValue(1, 0, 0, 1);
+		field.SetCellValue(2, 0, 0, 1);
+		field.SetCellValue(3, 0, 0, 1);
+
+		field.SetCellValue(0, 0, -3, 1);
+		field.SetCellValue(0, 0, -2, 1);
+		field.SetCellValue(0, 0, -1, 1);
+
+		field.SetCellValue(0, 0, 3, 1);
+		field.SetCellValue(0, 0, 2, 1);
+		field.SetCellValue(0, 0, 1, 1);
+
 		field.FinishStep();
 	}
 
@@ -54,13 +72,14 @@ public class FieldGameObject : MonoBehaviour {
 			}
 		}
 
+		float alpha = 0.5f;
+
 		for (float x = min, xPos = -offset + halfInterval; x <= max; x++, xPos += interval) {
 			for (float y = min, yPos = -offset + halfInterval; y <= max; y++, yPos += interval) {
 				for (float z = min, zPos = -offset + halfInterval; z <= max; z++, zPos += interval) {
 					int cellX = (int)x;
 					int cellY = (int)y;
 					int cellZ = (int)z;
-					float alpha = 0.5f;
 
 					if (null != field) {
 						double? cellValue = field.GetCellValue(cellX, cellY, cellZ);

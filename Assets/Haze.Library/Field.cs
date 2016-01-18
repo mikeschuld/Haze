@@ -1,20 +1,22 @@
-﻿using System;
-
-namespace Haze.Library {
-	public delegate void SimulationStep(Field field);
+﻿namespace Haze.Library {
+	using System;
+	using SimulationSteps;
+	using UnityEngine;
 
 	public class Field {
-		public SimulationStep Step;
-
-		private readonly double[,,] fieldData;
 		private readonly double[,,] afterStep;
+		private readonly double[,,] fieldData;
+
 		private readonly int initialExtents;
+		private readonly int offset;
 
-		public readonly int Offset;
+		private readonly ISimulationStep step;
 
-		public Field(int extents) {
+		public Field(int extents, ISimulationStep step) {
+			this.step = step;
+
 			initialExtents = extents;
-			Offset = extents / 2;
+			offset = extents / 2;
 
 			fieldData = new double[extents, extents, extents];
 			afterStep = new double[extents, extents, extents];
@@ -62,9 +64,44 @@ namespace Haze.Library {
 			return fieldData[dim1, dim2, dim3];
 		}
 
+		public double?[] GetKernelValues(int centerX, int centerY, int centerZ, int extents) {
+			// Force odd kernel extents
+			if (extents % 2 == 0) {
+				extents--;
+			}
+
+			double?[] values = new double?[extents * extents * extents];
+
+			int i = 0;
+			int min = -extents / 2;
+			int max = min + extents - 1;
+			for (int x = min; x <= max; x++) {
+				for (int y = min; y <= max; y++) {
+					for (int z = min; z <= max; z++) {
+						try {
+							values[i++] = GetCellValue(x + centerX, y + centerY, z + centerZ);
+						} catch {
+							Debug.Log(string.Format("{0}: {1},{2},{3}", i, x, y, z));
+						}
+					}
+				}
+			}
+
+			return values;
+		}
+
 		public void DoSimulationStep() {
-			if (null != Step) {
-				Step(this);
+			if (null != step) {
+				int min = -offset;
+				int max = offset;
+
+				for (int x = min; x <= max; x++) {
+					for (int y = min; y <= max; y++) {
+						for (int z = min; z <= max; z++) {
+							step.OnStep(this, x, y, z);
+						}
+					}
+				}
 			}
 
 			FinishStep();
@@ -74,11 +111,11 @@ namespace Haze.Library {
 			Array.Copy(afterStep, fieldData, afterStep.Length);
 			Array.Clear(afterStep, 0, afterStep.Length);
 		}
-		
+
 		private void OffsetDimensions(ref int dim1, ref int dim2, ref int dim3) {
-			dim1 += Offset;
-			dim2 += Offset;
-			dim3 += Offset;
+			dim1 += offset;
+			dim2 += offset;
+			dim3 += offset;
 		}
 	}
 }

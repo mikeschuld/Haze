@@ -41,8 +41,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Color: {r: 1, g: 1, b: 1, a: 0.25}
   DrawGrid: 1
-  Extents: 13
-  SideLength: 10
+  Extents: 15
+  SideLength: 15
   Simulate: 0
   Step: 0
 --- !u!1001 &100100000

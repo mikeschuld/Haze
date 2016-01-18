@@ -70,8 +70,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Haze.Library\SimulationSteps\Automata.cs" />
     <Compile Include="Assets\Haze.Library\SimulationSteps\Average.cs" />
     <Compile Include="Assets\Haze.Library\Field.cs" />
+    <Compile Include="Assets\Haze.Library\SimulationSteps\ISimulationStep.cs" />
     <Compile Include="Assets\Scripts\FieldGameObject.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
