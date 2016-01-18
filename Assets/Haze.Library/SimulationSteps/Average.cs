@@ -14,7 +14,7 @@
 						double? average = CalculateAverage(values);
 
 						if (average.HasValue) {
-							field.SetCellValue(x, y, z, average.Value);
+							field.AccumulateCellValue(x, y, z, average.Value);
 						}
 					}
 				}

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace Haze.Library {
 	public delegate void SimulationStep(Field field);
@@ -9,7 +8,7 @@ namespace Haze.Library {
 
 		private readonly double[,,] fieldData;
 		private readonly double[,,] afterStep;
-		private int initialExtents;
+		private readonly int initialExtents;
 
 		public readonly int Offset;
 
@@ -21,10 +20,22 @@ namespace Haze.Library {
 			afterStep = new double[extents, extents, extents];
 		}
 
+		public void AccumulateCellValue(int dim1, int dim2, int dim3, double value) {
+			OffsetDimensions(ref dim1, ref dim2, ref dim3);
+
+			if (dim1 < 0 || dim2 < 0 || dim3 < 0) {
+				return;
+			}
+
+			if (dim1 >= initialExtents || dim2 >= initialExtents || dim3 >= initialExtents) {
+				return;
+			}
+
+			afterStep[dim1, dim2, dim3] += value;
+		}
+
 		public void SetCellValue(int dim1, int dim2, int dim3, double value) {
-			dim1 += Offset;
-			dim2 += Offset;
-			dim3 += Offset;
+			OffsetDimensions(ref dim1, ref dim2, ref dim3);
 
 			if (dim1 < 0 || dim2 < 0 || dim3 < 0) {
 				return;
@@ -38,9 +49,7 @@ namespace Haze.Library {
 		}
 
 		public double? GetCellValue(int dim1, int dim2, int dim3) {
-			dim1 += Offset;
-			dim2 += Offset;
-			dim3 += Offset;
+			OffsetDimensions(ref dim1, ref dim2, ref dim3);
 
 			if (dim1 < 0 || dim2 < 0 || dim3 < 0) {
 				return null;
@@ -64,6 +73,12 @@ namespace Haze.Library {
 		public void FinishStep() {
 			Array.Copy(afterStep, fieldData, afterStep.Length);
 			Array.Clear(afterStep, 0, afterStep.Length);
+		}
+		
+		private void OffsetDimensions(ref int dim1, ref int dim2, ref int dim3) {
+			dim1 += Offset;
+			dim2 += Offset;
+			dim3 += Offset;
 		}
 	}
 }
